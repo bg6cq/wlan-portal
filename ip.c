@@ -149,6 +149,7 @@ void PrintFile(char *fname) {
 	if(fp) {
 		while(fgets(buf,MAXLEN,fp))
 			printf("%s",FilterLine(buf));
+		fclose(fp);
 	}
 }
 
@@ -377,6 +378,8 @@ int CGImain(void) {
 	ConnectDB();
 	s = GetValue("s");
 	GetMAC(remote_addr());
+	if(MAC[0]==0) 
+		DisplayStage('0',"无法获取MAC地址");
 	if ( (s== NULL) || *s=='0') 
 		Stage0();
 	else if( *s=='1') 
