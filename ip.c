@@ -36,16 +36,16 @@ MYSQL *mysql = NULL;
 
 int HtmlHeadOut = 0;
 
-void DisplayStage(char s, char *msg);
+void DisplayStage(char s, char *msg, int error);
 
 /* 连接mysql数据库 */
 MYSQL * ConnectDB(void)
 {
 	if( (mysql=mysql_init(NULL))==NULL ) 
-       	DisplayStage('0',"内部错误：mysql_init error");
+       	DisplayStage('0',"mysql_init error",1);
 	if( mysql_real_connect(mysql, AUTHDBHOST, AUTHDBUSER, AUTHDBPASSWD,
 		AUTHDB, AUTHDBPORT, AUTHDBSOCKPATH, 0)== NULL)
-       	DisplayStage('0',"内部错误：mysql_connect error");
+       	DisplayStage('0',"mysql_connect error",1);
     return mysql;
 }
 
@@ -54,10 +54,10 @@ MYSQL_RES * ExecSQL(char *sql, int haveresult)
 {
     MYSQL_RES *mysql_res;
     if( mysql_query(mysql,sql) )
-        DisplayStage('0',"内部错误：mysql_querying error");
+        DisplayStage('0',"mysql_querying error",1);
     if( haveresult ) {
         if( (mysql_res = mysql_store_result(mysql))==NULL ) 
-            DisplayStage('0',"内部错误：mysql_store_result error");
+            DisplayStage('0',"mysql_store_result error",1);
         return mysql_res;
     }
     return NULL;
@@ -182,12 +182,16 @@ void GetMAC(char *ip) {
 	fclose(fp);
 }
 
-void DisplayStage(char s, char *msg)
+void DisplayStage(char s, char *msg, int error)
 {
 	char *p;
 	char buf[MAXLEN];
-	if(msg!=NULL && *msg!=0) 
-		snprintf(DeferMSG,MAXLEN,"信息：%s",msg);
+	if(msg!=NULL && *msg!=0)  {
+		if(error) 
+			snprintf(DeferMSG,MAXLEN,"<font color=red>错误：%s</font>",msg);
+		else 
+			snprintf(DeferMSG,MAXLEN,"信息：%s",msg);
+	}
 	p = user_agent();
 	if ( (s<'0') ||  (s>'2') ) 
 		s='0';
@@ -238,21 +242,20 @@ void IPOnline( void )
 		mysql_close(mysql);
 		exit(0);
 	}
-	DisplayStage('2',"欢迎使用网络");
-
+	DisplayStage('2',"欢迎使用网络",0);
 }
 
 void CheckPhone(char*phone)
 {
 	char *p;
 	if(strlen(phone)!=11) 
-		DisplayStage('0',"电话号码必须是11位数字");
+		DisplayStage('0',"电话号码必须是11位数字",1);
 	for(p=phone;*p;p++) {
 		if(*p>='0' && *p<='9') continue;
-		DisplayStage('0',"电话号码必须是数字");
+		DisplayStage('0',"电话号码必须是数字",1);
 	}
 	if(*phone!='1') 
-		DisplayStage('0',"电话号码必须是数字1开头");
+		DisplayStage('0',"电话号码必须是数字1开头",1);
 }
 
 void Stage0(void) 
@@ -270,7 +273,7 @@ void Stage0(void)
 		ExecSQL(buf,0);
 		IPOnline();
 	}
-	DisplayStage('0',NULL);	
+	DisplayStage('0',NULL,0);	
 	exit(0);
 }
 
@@ -283,12 +286,12 @@ void Stage1() // sendsms, dispay input page
 	MYSQL_ROW row;
 	phone = GetValue("phone");
 	if( phone==NULL || phone[0]==0 ) 
-		DisplayStage('0',"输入的电话号码为空");
+		DisplayStage('0',"输入的电话号码为空",1);
 	CheckPhone(phone);
 	strncpy(PHONE,phone,12);	
 	p = GetValue("havepass");
 	if(p) 
-		DisplayStage('1',"请输入密码");
+		DisplayStage('1',"请输入密码",1);
 
 	// 检查该设备当天是否发送过短信, 每天最多 MAXPERMAC
 	snprintf(buf,MAXLEN,"select count from MACcount where MAC='%s' and sendday=curdate()",MAC);
@@ -297,7 +300,7 @@ void Stage1() // sendsms, dispay input page
 	if( row )    {
 		if( atoi(row[0]) >= MAXPERMAC ) {
 			sprintf(buf,"每台设备每天允许%d手机登录，今天已经使用%s次，请换台设备再试",MAXPERMAC,row[0]);
-			DisplayStage('0',buf);
+			DisplayStage('0',buf,1);
 		} 
 		snprintf(buf,MAXLEN,"update MACcount set count=count+1 where MAC='%s' and sendday=curdate()",MAC);
 		ExecSQL(buf,0);
@@ -313,7 +316,7 @@ void Stage1() // sendsms, dispay input page
 	if( row )    {
 		if( atoi(row[0]) >= MAXPERPHONE ) {
 			sprintf(buf,"每个手机每天允许%d短信，今天已经使用%s次，请换手机再试",MAXPERPHONE,row[0]);
-			DisplayStage('0',buf);
+			DisplayStage('0',buf,1);
 		} 
 		snprintf(buf,MAXLEN,"update Phonecount set count=count+1 where phone='%s' and sendday=curdate()",PHONE);
 		ExecSQL(buf,0);
@@ -336,7 +339,7 @@ void Stage1() // sendsms, dispay input page
 	ExecSQL(buf,0);
 	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"您在中国科大WLAN的密码是%s\" >/dev/null 2>/dev/null",PHONE,pass);
 	system(buf);
-	DisplayStage('1',"请输入手机上收到的密码");
+	DisplayStage('1',"请输入手机上收到的密码",0);
 }
 
 void Stage2() // setonline
@@ -347,20 +350,20 @@ void Stage2() // setonline
 	MYSQL_ROW row;
 	phone = GetValue("phone");
 	if( phone==NULL || phone[0]==0 ) 
-		DisplayStage('0',"输入的电话号码为空");
+		DisplayStage('0',"输入的电话号码为空",1);
 	CheckPhone(phone);
 	strncpy(PHONE,phone,12);	
 	password = GetValue("password");
 	if((password==NULL) || strlen(password)!=6) 
-		DisplayStage('1',"请输入密码");
+		DisplayStage('1',"请输入密码",1);
 	
 	snprintf(buf,MAXLEN,"select pass from PhonePass where phone='%s'",phone);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
 	if( row==NULL )   
-       		DisplayStage('0',"电话号码未注册,请重新输入");
+       		DisplayStage('0',"电话号码未注册,请重新输入",1);
 	if( strcmp(row[0],password)!=0 ) {
-       		DisplayStage('1',"密码错误,请重新输入");
+       		DisplayStage('1',"密码错误,请重新输入",1);
 	}
 	snprintf(buf,MAXLEN,"replace into MACPhone values('%s','%s',now(), '2035-1-1 00:00:00')",
 			MAC,PHONE);
@@ -379,7 +382,7 @@ int CGImain(void) {
 	s = GetValue("s");
 	GetMAC(remote_addr());
 	if(MAC[0]==0) 
-		DisplayStage('0',"无法获取MAC地址");
+		DisplayStage('0',"无法获取MAC地址",1);
 	if ( (s== NULL) || *s=='0') 
 		Stage0();
 	else if( *s=='1') 
