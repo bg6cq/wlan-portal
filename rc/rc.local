@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# This script will be executed *after* all the other init scripts.
+# You can put your own initialization stuff in here if you don't
+# want to do the full Sys V style init stuff.
+
+touch /var/lock/subsys/local
+
+ipset create user    bitmap:ip,mac   range 202.141.166.0/24
+#ipset add user 202.141.166.2,38:bc:1a:00:ac:e6
+
+iptables -t mangle -I PREROUTING -m set --match-set user src,src -j MARK --set-mark 1 
+
+iptables -A FORWARD -j ACCEPT -i eth0
+iptables -A FORWARD -j ACCEPT -m mark --mark 1
+iptables -A FORWARD -j NFQUEUE 
