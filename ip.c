@@ -263,7 +263,10 @@ void Stage0(void)
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
 	if( row )    {
-		snprintf(PHONE,11,row[0]);
+		snprintf(PHONE,12,row[0]);
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s auto online')",
+			remote_addr(), MAC, PHONE);
+		ExecSQL(buf,0);
 		IPOnline();
 	}
 	DisplayStage('0',NULL);	
@@ -281,7 +284,7 @@ void Stage1() // sendsms, dispay input page
 	if( phone==NULL || phone[0]==0 ) 
 		DisplayStage('0',"输入的电话号码为空");
 	CheckPhone(phone);
-	strncpy(PHONE,phone,11);	
+	strncpy(PHONE,phone,12);	
 	p = GetValue("havepass");
 	if(p) 
 		DisplayStage('1',"请输入密码");
@@ -291,7 +294,7 @@ void Stage1() // sendsms, dispay input page
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
 	if( row )    {
-		if( atoi(row[0]) > MAXPERMAC ) {
+		if( atoi(row[0]) >= MAXPERMAC ) {
 			sprintf(buf,"每台设备每天允许%d手机登录，今天已经使用%s次，请换台设备再试",MAXPERMAC,row[0]);
 			DisplayStage('0',buf);
 		} 
@@ -307,7 +310,7 @@ void Stage1() // sendsms, dispay input page
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
 	if( row )    {
-		if( atoi(row[0]) > MAXPERPHONE ) {
+		if( atoi(row[0]) >= MAXPERPHONE ) {
 			sprintf(buf,"每个手机每天允许%d短信，今天已经使用%s次，请换手机再试",MAXPERPHONE,row[0]);
 			DisplayStage('0',buf);
 		} 
@@ -327,6 +330,9 @@ void Stage1() // sendsms, dispay input page
 	pass[6]=0;
 	snprintf(buf,MAXLEN,"replace into PhonePass values ('%s', '%s')",PHONE,pass);
 	ExecSQL(buf,0);
+	snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s')",
+		remote_addr(), MAC, PHONE);
+	ExecSQL(buf,0);
 	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"您在中国科大WLAN的密码是%s\" >/dev/null 2>/dev/null",PHONE,pass);
 	system(buf);
 	DisplayStage('1',"请输入手机上收到的密码");
@@ -342,7 +348,7 @@ void Stage2() // setonline
 	if( phone==NULL || phone[0]==0 ) 
 		DisplayStage('0',"输入的电话号码为空");
 	CheckPhone(phone);
-	strncpy(PHONE,phone,11);	
+	strncpy(PHONE,phone,12);	
 	password = GetValue("password");
 	if((password==NULL) || strlen(password)!=6) 
 		DisplayStage('1',"请输入密码");
@@ -357,6 +363,9 @@ void Stage2() // setonline
 	}
 	snprintf(buf,MAXLEN,"replace into MACPhone values('%s','%s',now(), '2035-1-1 00:00:00')",
 			MAC,PHONE);
+	ExecSQL(buf,0);
+	snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s online')",
+		remote_addr(), MAC, PHONE);
 	ExecSQL(buf,0);
 
 	IPOnline();	
