@@ -1,7 +1,7 @@
 CFLAGS=-I/usr/include/mysql -L/usr/lib/mysql -Wall -L/usr/lib64/mysql
 
 
-all:install
+all:install redir_url
 
 ip: ip.c cgilib.c
 	gcc -g -o ip $(CFLAGS) ip.c  -lmysqlclient 
@@ -18,3 +18,10 @@ install:ip
 	cp mstage2.html /var/www/html
 	chown root /var/www/cgi-bin/ip
 	chmod u+s /var/www/cgi-bin/ip
+
+redir_url: redir_url.c
+	gcc -Wall $(CFLAGS) -g -lnetfilter_queue $< -o $@
+
+clean :
+	rm -f redir_url
+
