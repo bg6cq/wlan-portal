@@ -19,9 +19,6 @@
 #define AUTHDBPORT 		3306
 #define AUTHDBSOCKPATH 	"/var/lib/mysql/mysql.sock"
 
-#define	RATEINTERVAL	2
-#define RATECOUNT		20
-
 #define MAXPERMAC  5
 #define MAXPERPHONE 2
 
@@ -292,7 +289,7 @@ void Stage1() // sendsms, dispay input page
 	strncpy(PHONE,phone,12);	
 	p = GetValue("havepass");
 	if(p) 
-		DisplayStage('1',"请输入密码",1);
+		DisplayStage('1',"请输入密码",0);
 
 	// 检查该设备当天是否发送过短信, 每天最多 MAXPERMAC
 	snprintf(buf,MAXLEN,"select count from MACcount where MAC='%s' and sendday=curdate()",MAC);
