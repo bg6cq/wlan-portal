@@ -335,13 +335,13 @@ void Stage1() // sendsms, dispay input page
 	pass[6]=0;
 	snprintf(buf,MAXLEN,"replace into PhonePass values ('%s', '%s')",PHONE,pass);
 	ExecSQL(buf,0);
-	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"您在中国科大WLAN的密码是%s\" 2>/dev/null",PHONE,pass);
+	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"您在中国科大访客WLAN的密码是%s\" 2>/dev/null",PHONE,pass);
 	fp=popen(buf,"r");
 	if(fp==NULL){
 		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s error')",
 			remote_addr(), MAC, PHONE);
 		ExecSQL(buf,0);
-		DisplayStage('0',"密码send error",1);
+		DisplayStage('0',"密码发送失败",1);
 	}
 	fgets(buf,MAXLEN,fp);
 	if(strncmp(buf,"OK",2)==0) {
