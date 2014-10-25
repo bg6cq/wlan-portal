@@ -1,78 +1,49 @@
+<!DOCTYPE html>
 <HTML><HEAD><TITLE>WLAN-Portal</TITLE>
 <META http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width"/>
-<!--
-<style type="text/css">
-.x {	font-size: 18px;
-}
-.sform {
-	font-size: 18px;
-	background-color: #ffffff;
-}
-a:link {
-	color: #0000FF;
-	text-decoration: underline;
-}
-a:visited {
-	color: #0000FF;
-	text-decoration: underline;
-}
-a:hover {
-	color: #0000FF;
-	text-decoration: underline;
-}
-.style1 {
-	font-size: 22px;
-	font-weight: bold;
-}
-body {
-	margin-left: 0px;
-	margin-top: 0px;
-	margin-right: 0px;
-	margin-bottom: 0px;
-}
--->
-</style>
+<link rel="stylesheet" type="text/css" href="wlan-portal.css" />
 </HEAD>
 
-<BODY text=#000000 bgColor=#dddddd>
+<BODY>
 
 <form action=/cgi-bin/ip method=post>
 <input name=s value=2 type=hidden>
 <input name=url value=URL type=hidden>
 <input name=phone value=PHONE type=hidden>
 
-<table width="100%"  border="0" cellpadding="1" cellspacing="1">
-<tr> <td align=center><span class="style1">中国科学技术大学访客WLAN系统</span> </td> </tr>
+<table id=out>
+<tr><td><span class="style1">中国科学技术大学访客WLAN系统</span></td></tr>
 <tr><td>&nbsp;</td></tr>
 
 <tr>
-<td align=center>
-<table>
-<tr><td align=right>IP地址</td><td align=left>USERIP</td></tr>
-<tr><td align=right>MAC地址</td><td align=left>MACADDR</td></tr>
-<tr><td align=right>手机号码</td><td align=left>PHONE</td></tr>
+<td>
+<table id=in>
+<tr><td class=right>IP地址</td><td class=left>USERIP</td></tr>
+<tr><td class=right>MAC地址</td><td class=left>MACADDR</td></tr>
+<tr><td class=right>手机号码</td><td class=left>PHONE</td></tr>
 </table>
 </td>
 </tr>
+
 <tr><td>&nbsp;</td></tr>
 
-<tr><td align=center>有效期 <input type=radio name=timespan value=1 checked=checked>1天 
+<tr><td>有效期 <input type=radio name=timespan value=1 checked=checked>1天 
 <input type=radio name=timespan value=7>7天
 </td></tr>
 
-<tr> <td align=center>密码
-<INPUT name=password class="sform" size="6" maxLength="6" type="number"></td>
+<tr><td>密码
+<INPUT name=password class="sform" size="6" maxLength="6" type="tel"></td>
 </tr>
 
-<tr><td align=center>MSG</td></tr>
+<tr><td>MSG</td></tr>
 
-<tr> <td align=center> <INPUT type=submit class="sform" name=sendpass value="登录网络"> </tr>
+<tr><td><INPUT type=submit class="sform" name=sendpass value="登录网络"> </tr>
 
 </table>
 </form>
-<hr align="center" size="1" width="50%">
-<div align="center" class="x">
+<hr class=hr>
+<div class=foot>
 <a href=http://ustcnet.ustc.edu.cn>网络信息中心</a>用户服务部：<br>
 +86-551-63603488, <br>
 netservice@ustc.edu.cn
