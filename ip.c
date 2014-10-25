@@ -71,8 +71,10 @@ void title_body(void)
 }
 
 void HtmlHead(void) {
-	if( HtmlHeadOut==0 ) 
-		printf("Content-type: text/html\r\n\r\n");
+	if( HtmlHeadOut==0 ) {
+		printf("Content-type: text/html\r\n");
+		printf("Cache-control: no-cache\r\n\r\n");
+	}
 	HtmlHeadOut = 1;
 }
 
@@ -195,7 +197,7 @@ void DisplayStage(char s, char *msg, int error)
 
 	if( HtmlHeadOut==0 ) {
 		HtmlHead();
-		title_body(); 
+		// title_body(); 
 	}
 	if( p && (strstr(p,"Mobile")) ) {
 #ifdef DEBUG
