@@ -344,12 +344,12 @@ void Stage1() // sendsms, dispay input page
 
 void Stage2() // setonline
 {
-	char *phone,*password;
+	char *phone,*password,*p;
    	char buf[MAXLEN];
 	MYSQL_RES *mysql_res;
 	MYSQL_ROW row;
 	phone = GetValue("phone");
-	if( phone==NULL || phone[0]==0 ) 
+	if( (phone==NULL) || (phone[0]==0) ) 
 		DisplayStage('0',"输入的电话号码为空",1);
 	CheckPhone(phone);
 	strncpy(PHONE,phone,12);	
@@ -365,11 +365,16 @@ void Stage2() // setonline
 	if( strcmp(row[0],password)!=0 ) {
        		DisplayStage('1',"密码错误,请重新输入",1);
 	}
-	snprintf(buf,MAXLEN,"replace into MACPhone values('%s','%s',now(), '2035-1-1 00:00:00')",
-			MAC,PHONE);
+	
+	p=GetValue("timespan");
+	if ( (p==NULL) || (*p==0) ) p="1";
+	*(p+1)=0;
+	if ((*p!='1') || (*p!='7') )  p="1";
+	snprintf(buf,MAXLEN,"replace into MACPhone values('%s','%s',now(), date_add(now(), interval %s day))",
+			MAC,PHONE,p);
 	ExecSQL(buf,0);
-	snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s online')",
-		remote_addr(), MAC, PHONE);
+	snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s online %s day')",
+		remote_addr(), MAC, PHONE, p);
 	ExecSQL(buf,0);
 
 	IPOnline();	
