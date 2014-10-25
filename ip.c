@@ -38,7 +38,7 @@ int HtmlHeadOut = 0;
 
 void DisplayStage(char s, char *msg, int error);
 
-/* Á¬½ÓmysqlÊı¾İ¿â */
+/* è¿æ¥mysqlæ•°æ®åº“ */
 MYSQL * ConnectDB(void)
 {
 	if( (mysql=mysql_init(NULL))==NULL ) 
@@ -49,7 +49,7 @@ MYSQL * ConnectDB(void)
     return mysql;
 }
 
-/* Ö´ĞĞsqlÓï¾ä */
+/* æ‰§è¡Œsqlè¯­å¥ */
 MYSQL_RES * ExecSQL(char *sql, int haveresult)
 {
     MYSQL_RES *mysql_res;
@@ -188,9 +188,9 @@ void DisplayStage(char s, char *msg, int error)
 	char buf[MAXLEN];
 	if(msg!=NULL && *msg!=0)  {
 		if(error) 
-			snprintf(DeferMSG,MAXLEN,"<font color=red>´íÎó£º%s</font>",msg);
+			snprintf(DeferMSG,MAXLEN,"<font color=red>é”™è¯¯ï¼š%s</font>",msg);
 		else 
-			snprintf(DeferMSG,MAXLEN,"ĞÅÏ¢£º%s",msg);
+			snprintf(DeferMSG,MAXLEN,"ä¿¡æ¯ï¼š%s",msg);
 	}
 	p = user_agent();
 	if ( (s<'0') ||  (s>'2') ) 
@@ -238,24 +238,24 @@ void IPOnline( void )
 		}
 		printf("<script language=\"javascript\" type=\"text/javascript\">"
                         "window.location.href=\"%s\";</script>\n", url);
-		printf("Çë¼ÌĞø·ÃÎÊ<a href=%s>%s</a>",url,url);
+		printf("è¯·ç»§ç»­è®¿é—®<a href=%s>%s</a>",url,url);
 		mysql_close(mysql);
 		exit(0);
 	}
-	DisplayStage('2',"»¶Ó­Ê¹ÓÃÍøÂç",0);
+	DisplayStage('2',"æ¬¢è¿ä½¿ç”¨ç½‘ç»œ",0);
 }
 
 void CheckPhone(char*phone)
 {
 	char *p;
 	if(strlen(phone)!=11) 
-		DisplayStage('0',"µç»°ºÅÂë±ØĞëÊÇ11Î»Êı×Ö",1);
+		DisplayStage('0',"ç”µè¯å·ç å¿…é¡»æ˜¯11ä½æ•°å­—",1);
 	for(p=phone;*p;p++) {
 		if(*p>='0' && *p<='9') continue;
-		DisplayStage('0',"µç»°ºÅÂë±ØĞëÊÇÊı×Ö",1);
+		DisplayStage('0',"ç”µè¯å·ç å¿…é¡»æ˜¯æ•°å­—",1);
 	}
 	if(*phone!='1') 
-		DisplayStage('0',"µç»°ºÅÂë±ØĞëÊÇÊı×Ö1¿ªÍ·",1);
+		DisplayStage('0',"ç”µè¯å·ç å¿…é¡»æ˜¯æ•°å­—1å¼€å¤´",1);
 }
 
 void Stage0(void) 
@@ -286,20 +286,20 @@ void Stage1() // sendsms, dispay input page
 	MYSQL_ROW row;
 	phone = GetValue("phone");
 	if( phone==NULL || phone[0]==0 ) 
-		DisplayStage('0',"ÊäÈëµÄµç»°ºÅÂëÎª¿Õ",1);
+		DisplayStage('0',"è¾“å…¥çš„ç”µè¯å·ç ä¸ºç©º",1);
 	CheckPhone(phone);
 	strncpy(PHONE,phone,12);	
 	p = GetValue("havepass");
 	if(p) 
-		DisplayStage('1',"ÇëÊäÈëÃÜÂë",1);
+		DisplayStage('1',"è¯·è¾“å…¥å¯†ç ",1);
 
-	// ¼ì²é¸ÃÉè±¸µ±ÌìÊÇ·ñ·¢ËÍ¹ı¶ÌĞÅ, Ã¿Ìì×î¶à MAXPERMAC
+	// æ£€æŸ¥è¯¥è®¾å¤‡å½“å¤©æ˜¯å¦å‘é€è¿‡çŸ­ä¿¡, æ¯å¤©æœ€å¤š MAXPERMAC
 	snprintf(buf,MAXLEN,"select count from MACcount where MAC='%s' and sendday=curdate()",MAC);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
 	if( row )    {
 		if( atoi(row[0]) >= MAXPERMAC ) {
-			sprintf(buf,"Ã¿Ì¨Éè±¸Ã¿ÌìÔÊĞí%dÊÖ»úµÇÂ¼£¬½ñÌìÒÑ¾­Ê¹ÓÃ%s´Î£¬Çë»»Ì¨Éè±¸ÔÙÊÔ",MAXPERMAC,row[0]);
+			sprintf(buf,"æ¯å°è®¾å¤‡æ¯å¤©å…è®¸%dæ‰‹æœºç™»å½•ï¼Œä»Šå¤©å·²ç»ä½¿ç”¨%sæ¬¡ï¼Œè¯·æ¢å°è®¾å¤‡å†è¯•",MAXPERMAC,row[0]);
 			DisplayStage('0',buf,1);
 		} 
 		snprintf(buf,MAXLEN,"update MACcount set count=count+1 where MAC='%s' and sendday=curdate()",MAC);
@@ -309,13 +309,13 @@ void Stage1() // sendsms, dispay input page
 		ExecSQL(buf,0);
 	}
 	
-	// ¼ì²éÊÖ»úµ±ÌìÊÇ·ñ·¢ËÍ¹ı¶ÌĞÅ, Ã¿Ìì×î¶à MAXPERPHONE
+	// æ£€æŸ¥æ‰‹æœºå½“å¤©æ˜¯å¦å‘é€è¿‡çŸ­ä¿¡, æ¯å¤©æœ€å¤š MAXPERPHONE
 	snprintf(buf,MAXLEN,"select count from Phonecount where phone='%s' and sendday=curdate()",PHONE);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
 	if( row )    {
 		if( atoi(row[0]) >= MAXPERPHONE ) {
-			sprintf(buf,"Ã¿¸öÊÖ»úÃ¿ÌìÔÊĞí%d¶ÌĞÅ£¬½ñÌìÒÑ¾­Ê¹ÓÃ%s´Î£¬Çë»»ÊÖ»úÔÙÊÔ",MAXPERPHONE,row[0]);
+			sprintf(buf,"æ¯ä¸ªæ‰‹æœºæ¯å¤©å…è®¸%dçŸ­ä¿¡ï¼Œä»Šå¤©å·²ç»ä½¿ç”¨%sæ¬¡ï¼Œè¯·æ¢æ‰‹æœºå†è¯•",MAXPERPHONE,row[0]);
 			DisplayStage('0',buf,1);
 		} 
 		snprintf(buf,MAXLEN,"update Phonecount set count=count+1 where phone='%s' and sendday=curdate()",PHONE);
@@ -337,9 +337,9 @@ void Stage1() // sendsms, dispay input page
 	snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s')",
 		remote_addr(), MAC, PHONE);
 	ExecSQL(buf,0);
-	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"ÄúÔÚÖĞ¹ú¿Æ´óWLANµÄÃÜÂëÊÇ%s\" >/dev/null 2>/dev/null",PHONE,pass);
+	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"æ‚¨åœ¨ä¸­å›½ç§‘å¤§WLANçš„å¯†ç æ˜¯%s\" >/dev/null 2>/dev/null",PHONE,pass);
 	system(buf);
-	DisplayStage('1',"ÇëÊäÈëÊÖ»úÉÏÊÕµ½µÄÃÜÂë",0);
+	DisplayStage('1',"è¯·è¾“å…¥æ‰‹æœºä¸Šæ”¶åˆ°çš„å¯†ç ",0);
 }
 
 void Stage2() // setonline
@@ -350,20 +350,20 @@ void Stage2() // setonline
 	MYSQL_ROW row;
 	phone = GetValue("phone");
 	if( (phone==NULL) || (phone[0]==0) ) 
-		DisplayStage('0',"ÊäÈëµÄµç»°ºÅÂëÎª¿Õ",1);
+		DisplayStage('0',"è¾“å…¥çš„ç”µè¯å·ç ä¸ºç©º",1);
 	CheckPhone(phone);
 	strncpy(PHONE,phone,12);	
 	password = GetValue("password");
 	if((password==NULL) || strlen(password)!=6) 
-		DisplayStage('1',"ÇëÊäÈëÃÜÂë",1);
+		DisplayStage('1',"è¯·è¾“å…¥å¯†ç ",1);
 	
 	snprintf(buf,MAXLEN,"select pass from PhonePass where phone='%s'",phone);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
 	if( row==NULL )   
-       		DisplayStage('0',"µç»°ºÅÂëÎ´×¢²á,ÇëÖØĞÂÊäÈë",1);
+       		DisplayStage('0',"ç”µè¯å·ç æœªæ³¨å†Œ,è¯·é‡æ–°è¾“å…¥",1);
 	if( strcmp(row[0],password)!=0 ) {
-       		DisplayStage('1',"ÃÜÂë´íÎó,ÇëÖØĞÂÊäÈë",1);
+       		DisplayStage('1',"å¯†ç é”™è¯¯,è¯·é‡æ–°è¾“å…¥",1);
 	}
 	
 	p=GetValue("timespan");
@@ -387,7 +387,7 @@ int CGImain(void) {
 	s = GetValue("s");
 	GetMAC(remote_addr());
 	if(MAC[0]==0) 
-		DisplayStage('0',"ÎŞ·¨»ñÈ¡MACµØÖ·",1);
+		DisplayStage('0',"æ— æ³•è·å–MACåœ°å€",1);
 	if ( (s== NULL) || *s=='0') 
 		Stage0();
 	else if( *s=='1') 
