@@ -284,6 +284,7 @@ void Stage1() // sendsms, dispay input page
 	char pass[MAXLEN];
 	MYSQL_RES *mysql_res;
 	MYSQL_ROW row;
+	FILE *fp;
 	phone = GetValue("phone");
 	if( phone==NULL || phone[0]==0 ) 
 		DisplayStage('0',"输入的电话号码为空",1);
@@ -334,12 +335,28 @@ void Stage1() // sendsms, dispay input page
 	pass[6]=0;
 	snprintf(buf,MAXLEN,"replace into PhonePass values ('%s', '%s')",PHONE,pass);
 	ExecSQL(buf,0);
-	snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s')",
-		remote_addr(), MAC, PHONE);
-	ExecSQL(buf,0);
-	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"您在中国科大WLAN的密码是%s\" >/dev/null 2>/dev/null",PHONE,pass);
-	system(buf);
-	DisplayStage('1',"请输入手机上收到的密码",0);
+	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"您在中国科大WLAN的密码是%s\" 2>/dev/null",PHONE,pass);
+	fp=popen(buf,"r");
+	if(fp==NULL){
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s error')",
+			remote_addr(), MAC, PHONE);
+		ExecSQL(buf,0);
+		DisplayStage('0',"密码send error",1);
+	}
+	fgets(buf,MAXLEN,fp);
+	if(strncmp(buf,"OK",2)==0) {
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s')",
+			remote_addr(), MAC, PHONE);
+		ExecSQL(buf,0);
+		DisplayStage('1',"请输入手机上收到的密码",0);
+	} else {
+		char tmp[MAXLEN];
+		strncpy(tmp,buf,MAXLEN);
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s error %s')",
+			remote_addr(), MAC, PHONE,tmp);
+		ExecSQL(buf,0);
+		DisplayStage('0',tmp,1);
+	}
 }
 
 void Stage2() // setonline
