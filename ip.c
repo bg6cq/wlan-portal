@@ -66,7 +66,7 @@ MYSQL_RES * ExecSQL(char *sql, int haveresult)
 void title_body(void) 
 {
 	printf("<htm><head><title>WLAN-Portal</title>\n");
-	printf("<META http-equiv=Content-Type content=\"text/html; charset=gb2312\">\n");
+	printf("<META http-equiv=Content-Type content=\"text/html; charset=utf-8\">\n");
 	printf("<meta http-equiv=\"pragma\" content=\"no-cache\" />\n");
 	printf("<meta http-equiv=\"Cache-Control\" CONTENT=\"no-cache\">\n");
 	printf("<style type=\"text/css\"> <!-- a:link { color: #0000ff; text-decoration: underline; } a:visited { color: #0000ff; text-decoration: underline; } --> </style>\n");
