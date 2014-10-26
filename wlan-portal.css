@@ -1,0 +1,59 @@
+.x {	font-size: 18px;
+}
+.sform {
+	font-size: 18px;
+	background-color: #ffffff;
+}
+a:link {
+	color: #0000FF;
+	text-decoration: underline;
+}
+a:visited {
+	color: #0000FF;
+	text-decoration: underline;
+}
+a:hover {
+	color: #0000FF;
+	text-decoration: underline;
+}
+.style1 {
+	font-size: 22px;
+	font-weight: bold;
+}
+body {
+	text: #000000;
+	bgColor: #dddddd;
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+}
+#out {
+	width:100%;
+}
+
+#out td {
+	text-align:center;
+}
+#in {
+	width:100%;
+}
+#in td.left {
+	text-align:left;
+	width:50%;
+}
+
+#in td.right{
+	text-align:right;
+	width:50%;
+}
+
+.hr {
+	width:50%;
+ 	height:3px;
+	border:none;
+	border-top:3px double red;
+}
+.foot {
+	text-align:center;
+}

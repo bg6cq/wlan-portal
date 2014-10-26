@@ -10,6 +10,7 @@ install:ip
 	rm /var/www/cgi-bin/ip
 	cp ip /var/www/cgi-bin
 	cp index.html /var/www/html
+	cp wlan-portal.css /var/www/html
 	cp mstage0.html /var/www/html/stage0.html
 	cp mstage0.html /var/www/html
 	cp mstage1.html /var/www/html/stage1.html
