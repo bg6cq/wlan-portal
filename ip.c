@@ -218,13 +218,14 @@ void DisplayStage(char s, char *msg, int error)
 }
 
 
-void IPOnline( void )
+void IPOnline( int timespan )
 {
 	char buf[MAXLEN];
 	char *url;
 	setuid(0);
-	snprintf(buf,MAXLEN,"/usr/sbin/ipset add -exist user %s,%c%c:%c%c:%c%c:%c%c:%c%c:%c%c",
-		remote_addr(), MAC[0],MAC[1],MAC[2],MAC[3],MAC[4],MAC[5],MAC[6],MAC[7],MAC[8],MAC[9],MAC[10],MAC[11]);
+	snprintf(buf,MAXLEN,"/usr/sbin/ipset add -exist user %s,%c%c:%c%c:%c%c:%c%c:%c%c:%c%c timeout %d",
+		remote_addr(), MAC[0],MAC[1],MAC[2],MAC[3],MAC[4],MAC[5],MAC[6],MAC[7],MAC[8],MAC[9],MAC[10],MAC[11],
+		timespan );
 	system(buf);
 	snprintf(buf,MAXLEN,"insert into IPMACPhone values('%s', '%s','%s',now())",
 			remote_addr(),MAC,PHONE);
@@ -262,15 +263,15 @@ void Stage0(void)
 	char buf[MAXLEN];
 	MYSQL_RES *mysql_res;
 	MYSQL_ROW row;
-	snprintf(buf,MAXLEN,"select phone from MACPhone where MAC='%s' and now()< end",MAC);
+	snprintf(buf,MAXLEN,"select phone,timestampdiff(second,now(),end) from MACPhone where MAC='%s' and now()< end",MAC);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
 	if( row )    {
 		snprintf(PHONE,12,row[0]);
-		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s auto online')",
-			remote_addr(), MAC, PHONE);
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s auto online %s sec')",
+			remote_addr(), MAC, PHONE, row[1]);
 		ExecSQL(buf,0);
-		IPOnline();
+		IPOnline(atoi(row[1]));
 	}
 	DisplayStage('0',NULL,0);	
 	exit(0);
@@ -332,9 +333,9 @@ void Stage1() // sendsms, dispay input page
 		pass[i]='0' + r%10;
 	}
 	pass[6]=0;
-	snprintf(buf,MAXLEN,"replace into PhonePass values ('%s', '%s')",PHONE,pass);
+	snprintf(buf,MAXLEN,"replace into PhonePass values ('%s', '%s', date_add(now(), interval 8 day) )",PHONE,pass);
 	ExecSQL(buf,0);
-	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"您在中国科大访客WLAN的密码是%s\" 2>/dev/null",PHONE,pass);
+	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"您在中国科大访客WLAN的密码是%s，一周内都可以使用本密码登录，请保留本短信。\" 2>/dev/null",PHONE,pass);
 	fp=popen(buf,"r");
 	if(fp==NULL){
 		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s error')",
@@ -373,11 +374,11 @@ void Stage2() // setonline
 	if((password==NULL) || strlen(password)!=6) 
 		DisplayStage('1',"请输入密码",1);
 	
-	snprintf(buf,MAXLEN,"select pass from PhonePass where phone='%s'",phone);
+	snprintf(buf,MAXLEN,"select pass from PhonePass where phone='%s' and valid>now()",phone);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
 	if( row==NULL )   
-       		DisplayStage('0',"电话号码未注册,请重新输入",1);
+       		DisplayStage('0',"未查到一周内的电话号码信息,请重新输入",1);
 	if( strcmp(row[0],password)!=0 ) {
        		DisplayStage('1',"密码错误,请重新输入",1);
 	}
@@ -393,7 +394,7 @@ void Stage2() // setonline
 		remote_addr(), MAC, PHONE, p);
 	ExecSQL(buf,0);
 
-	IPOnline();	
+	IPOnline((*p-'0')*24*3600);
 }
 
 
