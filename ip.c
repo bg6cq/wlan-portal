@@ -227,8 +227,8 @@ void IPOnline( int timespan )
 		remote_addr(), MAC[0],MAC[1],MAC[2],MAC[3],MAC[4],MAC[5],MAC[6],MAC[7],MAC[8],MAC[9],MAC[10],MAC[11],
 		timespan );
 	system(buf);
-	snprintf(buf,MAXLEN,"insert into IPMACPhone values('%s', '%s','%s',now())",
-			remote_addr(),MAC,PHONE);
+	snprintf(buf,MAXLEN,"insert into IPMACPhone values('%s', '%s','%s',now(), addtime(now(), interval %d second))",
+			remote_addr(),MAC,PHONE,timespan);
 	ExecSQL(buf,0);
 	url=GetValue("url");
 	if(url && (*url) && (strcmp(url,"URL")!=0)) {
