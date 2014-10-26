@@ -4,12 +4,17 @@ iptables -t mangle -F
 iptables -F
 
 
+#set user was added by cgi program
 iptables -t mangle -I PREROUTING -j MARK --set-mark 1 \
 	-m set --match-set user src,src 
 
 iptables -A FORWARD -j ACCEPT -i eth0
 iptables -A FORWARD -j ACCEPT -m mark --mark 1
-iptables -A FORWARD -j NFQUEUE 
+
+#redirect unlogin user tcp traffic to redir_url via NFQUEUE 
+iptables -A FORWARD -j NFQUEUE -p tcp --dport 80 -m limit --limit 10000/s
+#drop unlogin user traffic
+iptables -A FORWARD -j DROP
 
 
 iptables -A INPUT -j ACCEPT -p tcp --dport 22 -s 202.38.64.0/19
