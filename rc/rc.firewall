@@ -1,0 +1,16 @@
+#!/bin/sh
+
+iptables -t mangle -F
+iptables -F
+
+
+iptables -t mangle -I PREROUTING -j MARK --set-mark 1 \
+	-m set --match-set user src,src 
+
+iptables -A FORWARD -j ACCEPT -i eth0
+iptables -A FORWARD -j ACCEPT -m mark --mark 1
+iptables -A FORWARD -j NFQUEUE 
+
+
+iptables -A INPUT -j ACCEPT -p tcp --dport 22 -s 202.38.64.0/19
+iptables -A INPUT -j DROP -p tcp --dport 22
