@@ -285,6 +285,9 @@ void Stage1() // sendsms, dispay input page
 	MYSQL_RES *mysql_res;
 	MYSQL_ROW row;
 	FILE *fp;
+	p = GetValue("changenum");
+	if ( p ) 
+		DisplayStage('0',"请输入电话号码",0);
 	phone = GetValue("phone");
 	if( phone==NULL || phone[0]==0 ) 
 		DisplayStage('0',"输入的电话号码为空",1);
