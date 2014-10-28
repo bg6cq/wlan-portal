@@ -328,14 +328,21 @@ void Stage1() // sendsms, dispay input page
 		snprintf(buf,MAXLEN,"replace into Phonecount values ('%s', now(), 1)",PHONE);
 		ExecSQL(buf,0);
 	}
-	srand(time(NULL));
-	int i;
-	for(i=0;i<6;i++) {
-		int r;
-		r=rand();
-		pass[i]='0' + r%10;
-	}
-	pass[6]=0;
+
+	snprintf(buf,MAXLEN,"select pass from PhonePass where phone='%s' and now()<valid",PHONE);
+	mysql_res = ExecSQL(buf,1);
+	row = mysql_fetch_row(mysql_res);
+	if( row==NULL ) {
+		srand(time(NULL));
+		int i;
+		for(i=0;i<6;i++) {
+			int r;
+			r=rand();
+			pass[i]='0' + r%10;
+		}
+		pass[6]=0;
+	} else 
+		strncpy(pass,row[0],7);
 	snprintf(buf,MAXLEN,"replace into PhonePass values ('%s', '%s', date_add(now(), interval 8 day) )",PHONE,pass);
 	ExecSQL(buf,0);
 	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"您在中国科大访客WLAN的密码是%s，一周内都可以使用本密码登录，请保留本短信。\" 2>/dev/null",PHONE,pass);
