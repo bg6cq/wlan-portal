@@ -17,6 +17,7 @@ install:ip
 	cp mstage1.html /var/www/html
 	cp mstage2.html /var/www/html/stage2.html
 	cp mstage2.html /var/www/html
+	cp help.html /var/www/html
 	chown root /var/www/cgi-bin/ip
 	chmod u+s /var/www/cgi-bin/ip
 
