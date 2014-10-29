@@ -16,9 +16,11 @@ a:hover {
 	color: #0000FF;
 	text-decoration: underline;
 }
-.style1 {
-	font-size: 22px;
+.title {
+	font-size: 24px;
 	font-weight: bold;
+	text-align: center;
+	
 }
 body {
 	text: #000000;
