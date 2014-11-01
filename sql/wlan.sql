@@ -106,6 +106,35 @@ CREATE TABLE `Phonecount` (
   PRIMARY KEY (`phone`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `VIPMAC`
+--
+
+DROP TABLE IF EXISTS `VIPMAC`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `VIPMAC` (
+  `MAC` char(12) NOT NULL,
+  `phone` char(11) NOT NULL,
+  `memo` varchar(30) NOT NULL,
+  PRIMARY KEY (`MAC`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `black`
+--
+
+DROP TABLE IF EXISTS `black`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `black` (
+  `black` char(12) NOT NULL,
+  `msg` varchar(60) NOT NULL,
+  PRIMARY KEY (`black`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -116,4 +145,4 @@ CREATE TABLE `Phonecount` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-10-26 23:30:53
+-- Dump completed on 2014-11-01 10:15:39

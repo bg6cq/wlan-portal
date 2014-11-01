@@ -155,6 +155,8 @@ void PrintFile(char *fname) {
 void GetMAC(char *ip) {
 	FILE *fp;
 	char buf[MAXLEN];
+	MYSQL_RES *mysql_res;
+	MYSQL_ROW row;
 	int len;
 	MAC[0] = 0;
 	len = strlen(ip);
@@ -179,6 +181,13 @@ void GetMAC(char *ip) {
 		MAC[12]=0;
 	}
 	fclose(fp);
+	snprintf(buf,MAXLEN,"select msg from black where black='%s'",MAC);
+	mysql_res = ExecSQL(buf,1);
+	row = mysql_fetch_row(mysql_res);
+	if( row )    {
+		snprintf(buf,MAXLEN,"此MAC地址禁用(%s)",row[0]);
+		DisplayStage('0',buf,1);
+	}
 }
 
 void DisplayStage(char s, char *msg, int error)
@@ -248,6 +257,9 @@ void IPOnline( int timespan )
 void CheckPhone(char*phone)
 {
 	char *p;
+	char buf[MAXLEN];
+	MYSQL_RES *mysql_res;
+	MYSQL_ROW row;
 	if(strlen(phone)!=11) 
 		DisplayStage('0',"电话号码必须是11位数字",1);
 	for(p=phone;*p;p++) {
@@ -256,6 +268,13 @@ void CheckPhone(char*phone)
 	}
 	if(*phone!='1') 
 		DisplayStage('0',"电话号码必须是数字1开头",1);
+	snprintf(buf,MAXLEN,"select msg from black where black='%s'",phone);
+	mysql_res = ExecSQL(buf,1);
+	row = mysql_fetch_row(mysql_res);
+	if( row )    {
+		snprintf(buf,MAXLEN,"此电话号码禁用(%s)",row[0]);
+		DisplayStage('0',buf,1);
+	}
 }
 
 void Stage0(void) 
@@ -263,6 +282,17 @@ void Stage0(void)
 	char buf[MAXLEN];
 	MYSQL_RES *mysql_res;
 	MYSQL_ROW row;
+
+	snprintf(buf,MAXLEN,"select phone,memo from VIPMAC where MAC='%s'",MAC);
+	mysql_res = ExecSQL(buf,1);
+	row = mysql_fetch_row(mysql_res);
+	if( row )    {
+		snprintf(PHONE,12,row[0]);
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s VIP %s auto online 7 day')",
+			remote_addr(), MAC, PHONE, row[1]);
+		ExecSQL(buf,0);
+		IPOnline(7*24*3600);
+	}
 	snprintf(buf,MAXLEN,"select phone,timestampdiff(second,now(),end) from MACPhone where MAC='%s' and now()< end",MAC);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
