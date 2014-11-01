@@ -33,41 +33,31 @@ MYSQL *mysql = NULL;
 
 int HtmlHeadOut = 0;
 
-void DisplayStage(char s, char *msg, int error);
+void DisplayStage ( char s, char *msg, int error );
 
 /* 连接mysql数据库 */
-MYSQL * ConnectDB(void)
+MYSQL * ConnectDB( void )
 {
-	if( (mysql=mysql_init(NULL))==NULL ) 
-       	DisplayStage('0',"mysql_init error",1);
+	if( (mysql = mysql_init(NULL)) == NULL ) 
+       		DisplayStage('0',"mysql_init error",1);
 	if( mysql_real_connect(mysql, AUTHDBHOST, AUTHDBUSER, AUTHDBPASSWD,
-		AUTHDB, AUTHDBPORT, AUTHDBSOCKPATH, 0)== NULL)
-       	DisplayStage('0',"mysql_connect error",1);
-    return mysql;
+		AUTHDB, AUTHDBPORT, AUTHDBSOCKPATH, 0) == NULL )
+       		DisplayStage('0',"mysql_connect error",1);
+	return mysql;
 }
 
 /* 执行sql语句 */
-MYSQL_RES * ExecSQL(char *sql, int haveresult)
+MYSQL_RES * ExecSQL ( char *sql, int haveresult )
 {
-    MYSQL_RES *mysql_res;
+    MYSQL_RES * mysql_res;
     if( mysql_query(mysql,sql) )
         DisplayStage('0',"mysql_querying error",1);
     if( haveresult ) {
-        if( (mysql_res = mysql_store_result(mysql))==NULL ) 
+        if( (mysql_res = mysql_store_result(mysql)) == NULL ) 
             DisplayStage('0',"mysql_store_result error",1);
         return mysql_res;
     }
     return NULL;
-}
-
-void title_body(void) 
-{
-	printf("<htm><head><title>WLAN-Portal</title>\n");
-	printf("<META http-equiv=Content-Type content=\"text/html; charset=utf-8\">\n");
-	printf("<meta http-equiv=\"pragma\" content=\"no-cache\" />\n");
-	printf("<meta http-equiv=\"Cache-Control\" CONTENT=\"no-cache\">\n");
-	printf("<style type=\"text/css\"> <!-- a:link { color: #0000ff; text-decoration: underline; } a:visited { color: #0000ff; text-decoration: underline; } --> </style>\n");
-	printf("</head><body bgcolor=\"#dddddd\" text=\"#000000\">\n");
 }
 
 void HtmlHead(void) {
@@ -78,59 +68,50 @@ void HtmlHead(void) {
 	HtmlHeadOut = 1;
 }
 
-void HtmlHeadCookie(char *cookie) {
-	if( HtmlHeadOut==0 ) {
-		printf("Content-type: text/html\r\n");
-		printf("Set-Cookie: %s\r\n\r\n",cookie);
-		HtmlHeadOut = 1;
-	} else 
-		printf("bug: HTML Head has sent\n");
-}
-
 char * FilterLine ( char * line) {
 	static char buf[MAXLEN];
-	char * url;
+	char *url;
 	
-   	int i=0;
-   	char * s, *p, *ps;
+   	int i = 0;
+   	char *s, *p, *ps;
 
 	p = GetValue("url");
 	if( (p==0) || (*p==0) ) 
-			url=NULL;
-	else url=p;
+			url = NULL;
+	else url = p;
 
-   	p=line;
+   	p = line;
    	while(*p) {
 		s = "USERIP";
 		if((ps=strstr(p,s))) {
-			strncpy(buf+i,p,ps-p);  i+=ps-p;
-			strcpy(buf+i,remote_addr()); i+=strlen(remote_addr());
+			strncpy(buf+i,p,ps-p);  i += ps-p;
+			strcpy(buf+i,remote_addr()); i += strlen(remote_addr());
 			p=ps+strlen(s); continue;
 		}
 		s = "MACADDR";
 		if((ps=strstr(p,s))) {
-			strncpy(buf+i,p,ps-p);  i+=ps-p;
-			strcpy(buf+i,MAC); i+=strlen(MAC);
+			strncpy(buf+i,p,ps-p);  i += ps-p;
+			strcpy(buf+i,MAC); i += strlen(MAC);
 			p=ps+strlen(s); continue;
 		}
 		s = "MSG";
 		if((ps=strstr(p,s))) {
-			strncpy(buf+i,p,ps-p);  i+=ps-p;
-			strcpy(buf+i,DeferMSG); i+=strlen(DeferMSG);
+			strncpy(buf+i,p,ps-p);  i += ps-p;
+			strcpy(buf+i,DeferMSG); i += strlen(DeferMSG);
 			p=ps+strlen(s); continue;
 		}
 		s = "PHONE";
 		if((ps=strstr(p,s))) {
-			strncpy(buf+i,p,ps-p);  i+=ps-p;
-			strcpy(buf+i,PHONE); i+=strlen(PHONE);
+			strncpy(buf+i,p,ps-p);  i += ps-p;
+			strcpy(buf+i,PHONE); i += strlen(PHONE);
 			p=ps+strlen(s); continue;
 		}
 		
 		if(url) {
 			s = "URL";
 			if((ps=strstr(p,s))) {
-				strncpy(buf+i,p,ps-p);  i+=ps-p;
-				strcpy(buf+i,url); i+=strlen(url);
+				strncpy(buf+i,p,ps-p);  i += ps-p;
+				strcpy(buf+i,url); i += strlen(url);
 				p=ps+strlen(s); continue;
 			}
 		}
@@ -206,7 +187,6 @@ void DisplayStage(char s, char *msg, int error)
 
 	if( HtmlHeadOut==0 ) {
 		HtmlHead();
-		// title_body(); 
 	}
 	if( p && (strstr(p,"Mobile")) ) {
 #ifdef DEBUG
@@ -243,11 +223,12 @@ void IPOnline( int timespan )
 	if(url && (*url) && (strcmp(url,"URL")!=0)) {
 		if( HtmlHeadOut==0 ) {
 			HtmlHead();
-			title_body(); 
+			PrintFile("/var/www/html/redir.html");
 		}
 		printf("<script language=\"javascript\" type=\"text/javascript\">"
                         "window.location.href=\"%s\";</script>\n", url);
-		printf("请继续访问<a href=%s>%s</a>",url,url);
+		printf("请继续访问<a href=%s>%s</a><p>",url,url);
+		printf("</body></html>\n");
 		mysql_close(mysql);
 		exit(0);
 	}
@@ -286,7 +267,7 @@ void Stage0(void)
 	snprintf(buf,MAXLEN,"select phone,memo from VIPMAC where MAC='%s'",MAC);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
-	if( row )    {
+	if( row ) {
 		snprintf(PHONE,12,row[0]);
 		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s VIP %s auto online 7 day')",
 			remote_addr(), MAC, PHONE, row[1]);
@@ -296,7 +277,7 @@ void Stage0(void)
 	snprintf(buf,MAXLEN,"select phone,timestampdiff(second,now(),end) from MACPhone where MAC='%s' and now()< end",MAC);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
-	if( row )    {
+	if( row ) {
 		snprintf(PHONE,12,row[0]);
 		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s auto online %s sec')",
 			remote_addr(), MAC, PHONE, row[1]);
@@ -331,7 +312,7 @@ void Stage1() // sendsms, dispay input page
 	snprintf(buf,MAXLEN,"select count from MACcount where MAC='%s' and sendday=curdate()",MAC);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
-	if( row )    {
+	if( row ) {
 		if( atoi(row[0]) >= MAXPERMAC ) {
 			sprintf(buf,"每台设备每天允许%d手机登录，今天已经使用%s次，请换台设备再试",MAXPERMAC,row[0]);
 			DisplayStage('0',buf,1);
@@ -347,7 +328,7 @@ void Stage1() // sendsms, dispay input page
 	snprintf(buf,MAXLEN,"select count from Phonecount where phone='%s' and sendday=curdate()",PHONE);
 	mysql_res = ExecSQL(buf,1);
 	row = mysql_fetch_row(mysql_res);
-	if( row )    {
+	if( row ) {
 		if( atoi(row[0]) >= MAXPERPHONE ) {
 			sprintf(buf,"每个手机每天允许%d短信，今天已经使用%s次，请换手机再试",MAXPERPHONE,row[0]);
 			DisplayStage('0',buf,1);
