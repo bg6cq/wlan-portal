@@ -359,21 +359,21 @@ void Stage1() // sendsms, dispay input page
 	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"%s是您在中国科大访客WLAN密码，一周内都可以使用本密码登录，请保留本短信。\" 2>/dev/null",PHONE,pass);
 	fp=popen(buf,"r");
 	if(fp==NULL){
-		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s error')",
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s send pass error')",
 			remote_addr(), MAC, PHONE);
 		ExecSQL(buf,0);
 		DisplayStage('0',"密码发送失败",1);
 	}
 	fgets(buf,MAXLEN,fp);
 	if(strncmp(buf,"OK",2)==0) {
-		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s')",
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s send pass ok')",
 			remote_addr(), MAC, PHONE);
 		ExecSQL(buf,0);
 		DisplayStage('1',"请输入手机上收到的密码",0);
 	} else {
 		char tmp[MAXLEN];
 		strncpy(tmp,buf,MAXLEN);
-		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'send pass to %s error %s')",
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s send pass error %s')",
 			remote_addr(), MAC, PHONE,tmp);
 		ExecSQL(buf,0);
 		DisplayStage('0',tmp,1);
