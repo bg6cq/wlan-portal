@@ -269,7 +269,7 @@ void Stage0(void)
 	row = mysql_fetch_row(mysql_res);
 	if( row ) {
 		snprintf(PHONE,12,row[0]);
-		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s VIP %s auto online 7 day')",
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s','%s',now(),'VIP %s auto online 7 day')",
 			remote_addr(), MAC, PHONE, row[1]);
 		ExecSQL(buf,0);
 		IPOnline(7*24*3600);
@@ -279,7 +279,7 @@ void Stage0(void)
 	row = mysql_fetch_row(mysql_res);
 	if( row ) {
 		snprintf(PHONE,12,row[0]);
-		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s auto online %s sec')",
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s','%s',now(),'auto online %s sec')",
 			remote_addr(), MAC, PHONE, row[1]);
 		ExecSQL(buf,0);
 		IPOnline(atoi(row[1]));
@@ -359,21 +359,21 @@ void Stage1() // sendsms, dispay input page
 	snprintf(buf,MAXLEN,"php /usr/src/sendsms/sendsms.php %s \"%s是您在中国科大访客WLAN密码，一周内都可以使用本密码登录，请保留本短信。\" 2>/dev/null",PHONE,pass);
 	fp=popen(buf,"r");
 	if(fp==NULL){
-		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s send pass error')",
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s','%s',now(),'send pass error')",
 			remote_addr(), MAC, PHONE);
 		ExecSQL(buf,0);
 		DisplayStage('0',"密码发送失败",1);
 	}
 	fgets(buf,MAXLEN,fp);
 	if(strncmp(buf,"OK",2)==0) {
-		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s send pass ok')",
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s','%s',now(),'send pass ok')",
 			remote_addr(), MAC, PHONE);
 		ExecSQL(buf,0);
 		DisplayStage('1',"请输入手机上收到的密码",0);
 	} else {
 		char tmp[MAXLEN];
 		strncpy(tmp,buf,MAXLEN);
-		snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s send pass error %s')",
+		snprintf(buf,MAXLEN,"insert into Log values('%s','%s','%s',now(),'send pass error %s')",
 			remote_addr(), MAC, PHONE,tmp);
 		ExecSQL(buf,0);
 		DisplayStage('0',tmp,1);
@@ -411,7 +411,7 @@ void Stage2() // setonline
 	snprintf(buf,MAXLEN,"replace into MACPhone values('%s','%s',now(), date_add(now(), interval %s day))",
 			MAC,PHONE,p);
 	ExecSQL(buf,0);
-	snprintf(buf,MAXLEN,"insert into Log values('%s','%s',now(),'%s online %s day')",
+	snprintf(buf,MAXLEN,"insert into Log values('%s','%s','%s',now(),'online %s day')",
 		remote_addr(), MAC, PHONE, p);
 	ExecSQL(buf,0);
 
