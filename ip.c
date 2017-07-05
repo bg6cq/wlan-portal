@@ -406,7 +406,7 @@ void Stage2() // setonline
 	
 	p=GetValue("timespan");
 	if ( (p==NULL) || (*p==0) ) p="1";
-	*(p+1)=0;
+	else *(p+1)=0;
 	if ((*p!='1') && (*p!='7') )  p="1";
 	snprintf(buf,MAXLEN,"replace into MACPhone values('%s','%s',now(), date_add(now(), interval %s day))",
 			MAC,PHONE,p);
