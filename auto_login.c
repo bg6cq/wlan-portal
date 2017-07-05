@@ -130,7 +130,7 @@ void IPOnline( char *ip, int timespan )
 	snprintf(buf,MAXLEN,"insert into IPMACPhone values('%s', '%s','%s',now(), date_add(now(), interval %d second))",
 			ip,MAC,PHONE,timespan);
 	ExecSQL(buf,0);
-	fprintf(stderr,"%s:%s:%s login",ip,MAC,PHONE);
+	fprintf(stderr,"%s:%s:%s login\n",ip,MAC,PHONE);
 }
 
 void process_auto_login(char *ip)
@@ -184,6 +184,8 @@ void process_auto_login(char *ip)
 		IPOnline(ip,atoi(row[1]));
 		return;
 	}
+	AddNewUser(ip);
+	fprintf(stderr,"%s:%s newuser\n",ip,MAC);
 }
 
 	
