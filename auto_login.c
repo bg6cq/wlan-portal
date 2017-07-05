@@ -85,7 +85,7 @@ void AddNewUser(char *ip)
 		ip, MAC[0],MAC[1],MAC[2],MAC[3],MAC[4],MAC[5],MAC[6],MAC[7],MAC[8],MAC[9],MAC[10],MAC[11],
 		600);
 	system(buf);
-	fprintf(stderr,"%s:%s newuser",ip,MAC);
+	fprintf(stderr,"%s:%s newuser\n",ip,MAC);
 }
 
 void GetMAC(char *ip) {
