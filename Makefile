@@ -1,7 +1,7 @@
 CFLAGS=-I/usr/include/mysql -L/usr/lib/mysql -Wall -L/usr/lib64/mysql
 
 
-all:install redir_url
+all:install redir_url auto_login
 
 ip: ip.c cgilib.c
 	gcc -g -o ip $(CFLAGS) ip.c  -lmysqlclient 
@@ -25,6 +25,8 @@ install:ip
 redir_url: redir_url.c
 	gcc -Wall $(CFLAGS) -g -lnetfilter_queue $< -o $@
 
+auto_login: auto_login.c
+	gcc -Wall $(CFLAGS) -g -lnetfilter_queue -lmysqlclient  $< -o $@
 clean :
 	rm -f redir_url
 

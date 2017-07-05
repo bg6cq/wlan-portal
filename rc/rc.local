@@ -6,7 +6,14 @@
 
 touch /var/lock/subsys/local
 
-ipset create user bitmap:ip,mac range 202.141.166.0/24 timeout 604800
+
+SUBNET=192.168.0.0/24
+
+#logined users
+ipset create user bitmap:ip,mac range $SUBNET timeout 604800
+
+#new users (could not do auto login)
+ipset create newuser bitmap:ip,mac range $SUBNET timeout 604800
 
 #ipset add user 202.141.166.2,38:bc:1a:00:ac:e6
 
