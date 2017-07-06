@@ -18,3 +18,16 @@ ipset create newuser bitmap:ip,mac range $SUBNET timeout 604800
 #ipset add user 202.141.166.2,38:bc:1a:00:ac:e6
 
 /etc/rc.d/rc.firewall
+
+echo 120 > /proc/sys/net/ipv4/neigh/default/gc_stale_time
+echo 2048 > /proc/sys/net/ipv4/neigh/default/gc_thresh1
+echo 4096 > /proc/sys/net/ipv4/neigh/default/gc_thresh2
+echo 8192 > /proc/sys/net/ipv4/neigh/default/gc_thresh3
+
+echo 100000 > /proc/sys/net/netfilter/nf_conntrack_max
+
+echo 600 > /proc/sys/net/netfilter/nf_conntrack_tcp_timeout_established
+echo 10 > /proc/sys/net/netfilter/nf_conntrack_udp_timeout
+echo 120 > /proc/sys/net/netfilter/nf_conntrack_udp_timeout_stream
+
+
