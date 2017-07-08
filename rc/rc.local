@@ -7,7 +7,7 @@
 touch /var/lock/subsys/local
 
 
-SUBNET=192.168.0.0/24
+SUBNET=192.168.0.0/20
 
 #logined users
 ipset create user bitmap:ip,mac range $SUBNET timeout 604800

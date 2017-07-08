@@ -23,10 +23,10 @@ install:ip
 	chmod u+s /var/www/cgi-bin/ip
 
 redir_url: redir_url.c
-	gcc -Wall $(CFLAGS) -g -lnetfilter_queue $< -o $@
+	gcc -Wall $(CFLAGS) -g -lnetfilter_queue -lnfnetlink $< -o $@
 
 auto_login: auto_login.c
-	gcc -Wall $(CFLAGS) -g -lnetfilter_queue -lmysqlclient  $< -o $@
+	gcc -Wall $(CFLAGS) -g -lnetfilter_queue -lmysqlclient -lnfnetlink $< -o $@
 
 indent:
 	indent ip.c redir_url.c auto_login.c -nbad -bap -nbc -bbo -hnl -br -brs -c33 -cd33 -ncdb -ce -ci4  \

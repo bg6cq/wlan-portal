@@ -1,0 +1,3 @@
+#!/bin/bash
+
+while true; do ./redir_url; sleep 1; done
