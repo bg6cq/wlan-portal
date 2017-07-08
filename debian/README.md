@@ -16,6 +16,7 @@ maybe you need change the PH of redir_url.c
 cd /usr/src/
 git clone https://github.com/bg6cq/wlan-portal.git
 cd wlan-portal
+git checkout -b local
 ln -s /usr/lib/cgi-bin /var/www
 mkdir -p /var/lib/mysql
 ln -s /var/run/mysqld/mysqld.sock /var/lib/mysql/mysql.sock
@@ -104,4 +105,5 @@ iptables -A FORWARD -j DROP
 iptables -A INPUT -j ACCEPT -p tcp --dport 22 -s 172.16.21.0/24
 iptables -A INPUT -j DROP -p tcp --dport 22
 ````
- 
+
+chmod a+x  /etc/network/if-pre-up.d/iptables 
