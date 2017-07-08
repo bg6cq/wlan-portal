@@ -5,7 +5,8 @@ select Web Server
 
 ## 1. install gcc etc
 ````
-apt-get install git gcc mysql-server mysql-client net-tools make libmysql++-dev libnetfilter-queue-dev libnl-nf-3-200 ipset screen apache2
+apt-get install git gcc mysql-server mysql-client net-tools make ipset screen apache
+apt-get install libmysql++-dev libnetfilter-queue-dev libnl-nf-3-200
 ````
 
 ## 2. get source & compile
@@ -107,3 +108,35 @@ iptables -A INPUT -j DROP -p tcp --dport 22
 ````
 
 chmod a+x  /etc/network/if-pre-up.d/iptables 
+
+## 9. /etc/dhcp/dhcpd.conf
+````
+# dhcpd.conf
+#
+#
+
+ddns-update-style none;
+ignore client-updates;
+option domain-name              "ustc.edu.cn";
+option domain-name-servers      172.16.80.1;
+
+authoritative;
+
+
+subnet 172.16.21.0 netmask 255.255.255.0 {
+        not authoritative;
+}
+subnet 172.16.80.0 netmask 255.255.254.0 {
+        authoritative;
+        option routers                  172.16.80.1;
+        option subnet-mask              255.255.254.0;
+        range dynamic-bootp 172.16.80.2 172.16.80.254;
+        range dynamic-bootp 172.16.81.1 172.16.81.254;
+        default-lease-time 600;
+        max-lease-time 3000;
+}
+````
+/etc/default/isc-dhcp-server
+
+INTERFACESv4="ens224"   ## which interface?
+
