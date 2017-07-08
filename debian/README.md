@@ -1,11 +1,17 @@
 # Debian install 
 
+## 0. debian system install
+select Web Server
+
 ## 1. install gcc etc
 ````
 apt-get install git gcc mysql-server mysql-client net-tools make libmysql++-dev libnetfilter-queue-dev libnl-nf-3-200 ipset screen apache2
 ````
 
-## 2. get source
+## 2. get source & compile
+
+maybe you need change the PH of redir_url.c
+
 ````
 cd /usr/src/
 git clone https://github.com/bg6cq/wlan-portal.git
@@ -14,15 +20,29 @@ ln -s /usr/lib/cgi-bin /var/www
 mkdir -p /var/lib/mysql
 ln -s /var/run/mysqld/mysqld.sock /var/lib/mysql/mysql.sock
 ln -s /sbin/ipset /usr/sbin
+touch /var/www/cgi-bin/ip
 make
 ````
 
-## 3. install & config DNS/DHCP if need
+## 4. install db
+````
+echo "create database wlan;" | mysql
+mysql wlan < sql/wlan.sql
+````
+
+## 5. enable apache2 cgi
+````
+a2enmod cgi
+systemctl restart apache2
+````
+
+## 6. install & config DNS/DHCP if need
 ````
 apt-get install isc-dhcp-server bind9 bind9utils
 ````
 
-## 4. /etc/rc.local
+## 7. /etc/rc.local
+
 ````
 #!/bin/sh
 #
@@ -42,7 +62,13 @@ screen -S wlan_redir -d -m ./run_redir
 screen -S wlan_autologin -d -m ./run_autologin
 ````
 
-## 5. /etc/network/if-pre-up.d/iptables
+enable rc.local
+````
+chmod a+x /etc/rc.local
+systemctl start rc-local
+````
+
+## 8. /etc/network/if-pre-up.d/iptables
 ````
 #!/bin/sh
 
