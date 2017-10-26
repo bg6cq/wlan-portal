@@ -153,8 +153,10 @@ void process_auto_login(char *ip)
 	if (row) {
 		AddNewUser(ip);
 		fprintf(stderr, "%s:%s MAC地址禁用\n", ip, MAC);
+		mysql_free_result(mysql_res);
 		return;
 	}
+	mysql_free_result(mysql_res);
 
 	snprintf(buf, MAXLEN, "select phone,memo from VIPMAC where MAC='%s'", MAC);
 	mysql_res = ExecSQL(buf, 1);
@@ -167,8 +169,10 @@ void process_auto_login(char *ip)
 		fprintf(stderr, "VIP %s:%s:%s login\n", row[1], ip, MAC);
 #endif
 		IPOnline(ip, 7 * 24 * 3600);
+		mysql_free_result(mysql_res);
 		return;
 	}
+	mysql_free_result(mysql_res);
 	snprintf(buf, MAXLEN, "select phone,timestampdiff(second,now(),end) from MACPhone where MAC='%s' and now()< end", MAC);
 	mysql_res = ExecSQL(buf, 1);
 	row = mysql_fetch_row(mysql_res);
@@ -180,8 +184,10 @@ void process_auto_login(char *ip)
 		fprintf(stderr, "auto login %s:%s:%s login\n", row[1], ip, MAC);
 #endif
 		IPOnline(ip, atoi(row[1]));
+		mysql_free_result(mysql_res);
 		return;
 	}
+	mysql_free_result(mysql_res);
 	AddNewUser(ip);
 	fprintf(stderr, "%s:%s newuser\n", ip, MAC);
 }
